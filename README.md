@@ -6,7 +6,7 @@ This is most useful to give a quick analysis of your photography settings and us
 
 ## Getting Started
 Ensure the [MetadataExtractor](https://github.com/drewnoakes/metadata-extractor-dotnet/tree/main) and [ConsoleTables](https://github.com/khalidabuhakmeh/ConsoleTables) nuget package are installed
-```
+```c#
   <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.4.2" />
     <PackageReference Include="MetadataExtractor" Version="2.8.1" />
@@ -14,7 +14,7 @@ Ensure the [MetadataExtractor](https://github.com/drewnoakes/metadata-extractor-
 ```
 * Set `Program.cs` to startup project
 * Find your file path from file explorer
-```
+```c#
 public static void Main(string[] args)
 {
   List<ImageExif> images = Program.GetImagesFromPath(""); // Update This to your image path
@@ -41,7 +41,7 @@ public static void Main(string[] args)
 
 ## Usage
 * If you wish to update any file extentions, they can be updated under `ImageFileExtention`
-```
+```c#
 public enum ImageFileExtention
 {
     RAF,
