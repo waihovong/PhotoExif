@@ -33,11 +33,29 @@ public class Program
 
     public static List<ImageExif> GetImagesFromPath(string searchFolder)
     {
+        List<ImageExif> exifData = new List<ImageExif>();
+        if (string.IsNullOrEmpty(searchFolder))
+        {
+            Console.WriteLine("File not found");
+            return exifData;
+        }
+
         string[] imageFiles = System.IO.Directory.GetFiles(searchFolder);
+
+        if (imageFiles == null)
+        {
+            Console.WriteLine("File not found");
+            return exifData;
+        }
 
         var filterImageFiles = imageFiles.Where(
             r => r.Contains(ImageFileExtention.JPG.ToString(), StringComparison.OrdinalIgnoreCase)); // Update this to your image extention
-        List<ImageExif> exifData = new List<ImageExif>();
+
+        if (filterImageFiles == null)
+        {
+            Console.WriteLine("Images not found");
+            return exifData;
+        }
 
         try
         {
@@ -52,7 +70,6 @@ public class Program
                     // Exposure Bias simplified
                     var descriptor = new ExifSubIfdDescriptor(exifSubIfdDirectory);
                     String evBias = descriptor.GetExposureBiasDescription();
-
                     //for camera make and model
                     var exifIfd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
                     if (exifIfd0Directory != null)
@@ -62,7 +79,7 @@ public class Program
                             File = image.Split("\\").Last(),
                             FStop = exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagFNumber),
                             ISO = exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagIsoEquivalent),
-                            ShutterSpeed = FormatShutterSpeed(exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagShutterSpeed)),
+                            ShutterSpeed = exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagExposureTime),
                             FocalLength = exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagFocalLength),
                             ExposureBias = evBias,
                             DateTime = exifSubIfdDirectory.GetDescription(ExifSubIfdDirectory.TagDateTimeOriginal),
@@ -79,34 +96,6 @@ public class Program
         }
 
         return exifData;
-    }
-
-    private static DateTime? ParseDateTime(string value)
-    {
-        if (value == null) return null;
-        if (DateTime.TryParse(value.ToString(), out DateTime dateTime))
-        {
-            return dateTime;
-        }
-        return null;
-    }
-
-    private static string FormatShutterSpeed(string value)
-    {
-        if (value == null) return null;
-        if (value.Contains("/"))
-        {
-            string[] shutterValue = value.Split("/");
-            if (shutterValue.Length == 2 && int.TryParse(shutterValue[0], out int numerator) && int.TryParse(shutterValue[1].Split(" ")[0], out int denominator))
-            {
-                if (numerator == 1 && denominator > 1)
-                {
-                    int roundShutterValue = (int)Math.Round(denominator / 10.0) * 10;
-                    return $"{shutterValue[0]}/{roundShutterValue} sec";
-                }
-            }
-        }
-        return value;
     }
 
     public static void PrintImageExifTable(List<ImageExif> images)
