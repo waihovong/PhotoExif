@@ -20,7 +20,7 @@ public static void Main(string[] args)
   List<ImageExif> images = Program.GetImagesFromPath(""); // Update This to your image path
 }
 ```
-
+* Click `PhotoExif` or `dotnet run` in the Developer PowerShell
 ## Usage
 * If you wish to update any file extentions, they can be updated under `ImageFileExtention`
 ```
